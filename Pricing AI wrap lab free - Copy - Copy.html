@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agentic Pricing Lab – Multi-Vertical Classroom UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #020617;
+      --accent: #7c3aed;
+      --accent-soft: rgba(124, 58, 237, 0.15);
+      --accent-2: #ec4899;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #020617 100%);
+  color: var(--text);
+  padding: 24px;
+  display: block; /* resets centering */
+}
+
+    .shell {
+      max-width: 1120px;
+      width: 100%;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), #020617);
+      border-radius: 28px;
+      padding: 18px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      box-shadow: 0 26px 90px rgba(15, 23, 42, 0.95);
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.75fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 960px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 14px;
+      }
+    }
+
+    .header {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+/* Sticky footer */
+footer.sticky-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  background: rgba(15, 23, 42, 0.85); /* matches your panel background */
+  color: #9ca3af;
+  border-top: 1px solid rgba(148, 163, 184, 0.4);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+}
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 19px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.75);
+      color: #6ee7b7;
+      background: rgba(6, 95, 70, 0.4);
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Engine toggle */
+
+    .engine-toggle {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .engine-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 5px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .engine-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #020617;
+      border-color: transparent;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.9);
+      font-weight: 600;
+    }
+
+    /* Tabs */
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #020617;
+      border-color: transparent;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.9);
+    }
+
+    /* Scenario panel */
+
+    .panel {
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.2), var(--panel));
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 12px 14px 14px;
+      margin-top: 10px;
+    }
+
+    .panel h2 {
+      font-size: 13px;
+      margin: 0 0 4px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .panel p {
+      margin: 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .vertical-form {
+      margin-top: 8px;
+      display: none;
+    }
+
+    .vertical-form.active {
+      display: block;
+    }
+
+    .field {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      background: rgba(15, 23, 42, 0.98);
+      padding: 7px 11px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .field textarea {
+      border-radius: 12px;
+      min-height: 60px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .hint-small {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #020617;
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.7);
+    }
+
+    button.secondary {
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #6b7280;
+    }
+
+    .dot.live {
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35);
+    }
+
+    /* Right panel: log */
+
+    .log-card {
+      background: radial-gradient(circle at top right, rgba(8, 47, 73, 0.8), #020617);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-card h2 {
+      font-size: 13px;
+      margin: 0;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .log {
+      margin-top: 6px;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 12px;
+      border: 1px solid rgba(31, 41, 55, 0.98);
+      height: 420px;
+      overflow-y: auto;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .log::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .log::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 999px;
+    }
+
+    .msg {
+      margin-bottom: 6px;
+    }
+
+    .msg-role {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .msg-role.agent {
+      color: #a5b4fc;
+    }
+
+    .msg-bubble {
+      background: rgba(17, 24, 39, 0.98);
+      border-radius: 10px;
+      border: 1px solid rgba(75, 85, 99, 0.95);
+      padding: 6px 8px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <!-- LEFT PANEL -->
+    <div>
+      <div class="header">
+        <div>
+          <div class="title-row">
+            <h1>Agentic Pricing Lab</h1>
+            <span class="badge">Multi-Vertical Lab</span>
+          </div>
+          <p class="subtitle">
+            Choose a Industry vertical, describe the scenario, then run the pricing agent using ChatGPT or Microsoft Copilot.
+          </p>
+        </div>
+        <div class="engine-toggle">
+          <button class="engine-btn active" data-engine="chatgpt">Run using ChatGPT</button>
+          <button class="engine-btn" data-engine="copilot">Run using Microsoft Copilot</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="airlines">✈️ Airlines</button>
+        <button class="tab" data-tab="smartphones">📱 Smartphones</button>
+        <button class="tab" data-tab="fmcg">🧃 FMCG</button>
+        <button class="tab" data-tab="energy">🔋 Energy</button>
+        <button class="tab" data-tab="custom">🧠 Custom</button>
+      </div>
+
+      <div class="panel">
+        <h2>Scenario Setup</h2>
+        <p>
+          Dear user: Please fill in the details as a pricing manager would. Then press
+          <strong>Run Pricing Agent</strong> and observe how the engine responds.
+        </p>
+
+        <!-- Airlines -->
+        <div class="vertical-form active" data-form="airlines">
+          <div class="field">
+            <label for="route">Route / market</label>
+            <input id="route" placeholder="e.g., DEL–GOI weekend, BLR–DEL peak hours, metro–tier II network" />
+            <div class="hint-small">
+              Describe one route or a small network where surge pricing or fare changes matter.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="airlineRole">Focal airline & role</label>
+            <input id="airlineRole" placeholder="e.g., IndiGo as LCC leader, Vistara as premium FSA, new low-cost challenger" />
+            <div class="hint-small">
+              Indicate whether your airline is the price leader, premium player, or a follower.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="airlineWindow">Pricing window</label>
+            <select id="airlineWindow">
+              <option>Next 7 days</option>
+              <option>Next 14 days</option>
+              <option>Festive / long weekend period</option>
+              <option>Current quarter</option>
+              <option>Off-peak shoulder weeks</option>
+            </select>
+            <div class="hint-small">
+              Select the time period for which you want the agent to evaluate pricing.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="airlineDemand">Demand scenario</label>
+            <select id="airlineDemand">
+              <option>Soft demand / low load factors</option>
+              <option>Stable / normal demand</option>
+              <option>High demand / many flights near full</option>
+              <option>Highly volatile – spikes around events</option>
+            </select>
+            <div class="hint-small">
+              Choose how strong or volatile demand is on this route.
+            </div>
+          </div>
+        </div>
+
+        <!-- Smartphones -->
+        <div class="vertical-form" data-form="smartphones">
+          <div class="field">
+            <label for="phoneSeg">Product focus / segment</label>
+            <input id="phoneSeg" placeholder="e.g., Flagship 5G, mid-tier Android, budget entry-level phone" />
+            <div class="hint-small">
+              Specify the segment of smartphones you are pricing for.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="phoneGeo">Geography</label>
+            <input id="phoneGeo" placeholder="e.g., India Tier-I & II, only South India, GCC, APAC" />
+            <div class="hint-small">
+              Indicate where this pricing decision primarily applies.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="phoneWindow">Timeline</label>
+            <select id="phoneWindow">
+              <option>Last 7 days</option>
+              <option>Last 14 days</option>
+              <option>Last 30 days</option>
+              <option>Festive / launch period</option>
+              <option>Quarter-to-date</option>
+            </select>
+            <div class="hint-small">
+              Choose the time window of competitor and market activity you want to consider.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="phoneChannel">Channel mix</label>
+            <select id="phoneChannel">
+              <option>Online-heavy (Amazon, Flipkart, brand.com)</option>
+              <option>Offline-heavy (multi-brand stores, exclusive outlets)</option>
+              <option>Balanced online + offline</option>
+            </select>
+            <div class="hint-small">
+              Select how your brand sells most of its volume in this scenario.
+            </div>
+          </div>
+        </div>
+
+        <!-- FMCG -->
+        <div class="vertical-form" data-form="fmcg">
+          <div class="field">
+            <label for="fmcgCat">Category / brand span</label>
+            <input id="fmcgCat" placeholder="e.g., Packaged juices, detergents, biscuits, edible oil, etc." />
+            <div class="hint-small">
+              Name the FMCG category or brand family you are working with.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="fmcgGeo">Geography & channels</label>
+            <input id="fmcgGeo" placeholder="e.g., India GT + MT, South GT only, modern trade in metros" />
+            <div class="hint-small">
+              Describe the main region and channel mix (GT, MT, e-commerce).
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="fmcgWindow">Promo window</label>
+            <select id="fmcgWindow">
+              <option>Current month promotions</option>
+              <option>Upcoming festive cycle</option>
+              <option>Quarter-to-date</option>
+              <option>Off-season / lean period</option>
+            </select>
+            <div class="hint-small">
+              Choose the period for which promotions and discounts are being evaluated.
+            </div>
+          </div>
+        </div>
+
+        <!-- Energy -->
+        <div class="vertical-form" data-form="energy">
+          <div class="field">
+            <label for="energySeg">Segment</label>
+            <select id="energySeg">
+              <option>Residential rooftop</option>
+              <option>Commercial & industrial</option>
+              <option>Rural / off-grid solar</option>
+              <option>Utility-scale or IPP</option>
+            </select>
+            <div class="hint-small">
+              Select the type of solar / energy project for this scenario.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="energyGeo">Geography & policy context</label>
+            <input id="energyGeo" placeholder="e.g., Rajasthan semi-urban, deep-rural districts in UP, EU market, GCC, etc." />
+            <div class="hint-small">
+              Mention the region and any important policy or subsidy context.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="energyWindow">Timeline / tender window</label>
+            <select id="energyWindow">
+              <option>Last 6–12 months</option>
+              <option>Upcoming RfP / tender period</option>
+              <option>Current quarter roll-outs</option>
+              <option>Projected next 12 months</option>
+            </select>
+            <div class="hint-small">
+              Choose the period of bidding or decision-making for this project.
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom -->
+        <div class="vertical-form" data-form="custom">
+          <div class="field">
+            <label for="customTitle">Scenario name</label>
+            <input id="customTitle" placeholder="e.g., Premium EV launch in Tier-I India with strong Chinese competition" />
+            <div class="hint-small">
+              Give your scenario a short, descriptive title.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="customContext">Context for the agent</label>
+            <textarea id="customContext"
+              placeholder="Briefly describe the product/service, target segments, geography, time frame, and the pricing dilemma you want the agent to focus on."></textarea>
+            <div class="hint-small">
+              Write 3–5 lines so the agent understands the situation without extra prompting.
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="primary" id="runBtn">▶ Run Pricing Agent</button>
+          <button class="secondary" id="clearBtn">⟲ Reset log</button>
+        </div>
+
+        <div class="status">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">Idle – select a vertical, fill details, then run.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="log-card">
+      <h2>Agent Log</h2>
+      <div id="log" class="log"></div>
+    </div>
+  </div>
+
+  <script>
+    // Tabs & forms
+    const tabs = document.querySelectorAll(".tab");
+    const forms = document.querySelectorAll(".vertical-form");
+    const logEl = document.getElementById("log");
+    const runBtn = document.getElementById("runBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+
+    // Engine toggle
+    const engineButtons = document.querySelectorAll(".engine-btn");
+    let activeVertical = "airlines";
+    let activeEngine = "chatgpt"; // "chatgpt" or "copilot"
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        activeVertical = tab.dataset.tab;
+        tabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        forms.forEach((f) => {
+          f.classList.toggle("active", f.dataset.form === activeVertical);
+        });
+      });
+    });
+
+    engineButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        activeEngine = btn.dataset.engine;
+        engineButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    function addMsg(role, txt) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "msg";
+      const r = document.createElement("div");
+      r.className = "msg-role " + role;
+      r.textContent = role === "agent" ? "Agent" : "You";
+      const bubble = document.createElement("div");
+      bubble.className = "msg-bubble";
+      bubble.innerHTML = txt;
+      wrapper.appendChild(r);
+      wrapper.appendChild(bubble);
+      logEl.appendChild(wrapper);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function setStatus(state, msg) {
+      statusText.textContent = msg;
+      statusDot.classList.toggle("live", state === "live");
+    }
+
+    // Prompt builder
+    function buildPrompt() {
+      if (activeVertical === "airlines") {
+        return `You are an agentic pricing copilot.
+- Use your live web browsing or search tools to fetch up-to-date, India-relevant pricing, competitive, and demand context for this scenario. 
+- Clearly separate facts grounded in web search from patterns inferred from your prior training data.
+- Combine the web evidence with your internal knowledge to explain the *why* behind pricing signals and recommended moves.
+- Explicitly flag where you are extrapolating beyond the available evidence.
+
+Airline scenario:
+Route / market: ${route.value}
+Focal airline & role: ${airlineRole.value}
+Pricing window: ${airlineWindow.value}
+Demand scenario: ${airlineDemand.value}
+
+Give:
+A one-line situation summary.
+A) Manager Snapshot — 5–8 bullet points a busy manager can read in under a minute.
+B) Deeper Analyst Notes — 2–3 short paragraphs explaining logic, trade-offs (e.g., fare adjustments, ancillaries, seat control), with brief notes on yield vs load vs fairness.
+
+CLOSING:
+"Now you can return to the Agentic Pricing Lab UI at "XX" to log or refine this scenario."`;
+      }
+
+      if (activeVertical === "smartphones") {
+        return `You are an agentic pricing copilot.
+- Use your live web browsing or search tools to fetch up-to-date, India-relevant pricing, competitive, and demand context for this scenario. 
+- Clearly separate facts grounded in web search from patterns inferred from your prior training data.
+- Combine the web evidence with your internal knowledge to explain the *why* behind pricing signals and recommended moves.
+- Explicitly flag where you are extrapolating beyond the available evidence.
+
+Smartphones / devices scenario:
+Product focus: ${phoneSeg.value}
+Geography: ${phoneGeo.value}
+Timeline: ${phoneWindow.value}
+Channel mix: ${phoneChannel.value}
+
+Return:
+A short context summary.
+A) Manager Snapshot — 5–8 bullet points a busy manager can read in under a minute (pricing / promo signals (discounts, cashbacks, new SKUs, etc.)).
+B) Deeper Analyst Notes — 2–3 short paragraphs explaining logic, trade-offs (with brief comments on margin and market share)
+CLOSING:
+"Now you can return to the Agentic Pricing Lab UI at "XX" to log or refine this scenario.`;
+      }
+
+      if (activeVertical === "fmcg") {
+        return `You are an agentic pricing copilot.
+- Use your live web browsing or search tools to fetch up-to-date, India-relevant pricing, competitive, and demand context for this scenario. 
+- Clearly separate facts grounded in web search from patterns inferred from your prior training data.
+- Combine the web evidence with your internal knowledge to explain the *why* behind pricing signals and recommended moves.
+- Explicitly flag where you are extrapolating beyond the available evidence.
+
+FMCG / retail scenario:
+Category / brand span: ${fmcgCat.value}
+Geography & channels: ${fmcgGeo.value}
+Promo window: ${fmcgWindow.value}
+
+Return:
+A short context summary.
+A) Manager Snapshot — 5–8 bullet points a busy manager can read in under a minute (pricing / promo patterns (MRP games, pack sizes, GT vs MT schemes).
+B) Deeper Analyst Notes — 2–3 short paragraphs recommended pricing / promo actions, with risks for brand equity or channel conflict.)
+CLOSING:
+"Now you can return to the Agentic Pricing Lab UI at "XX" to log or refine this scenario.`;
+      }
+
+      if (activeVertical === "energy") {
+        return `You are an agentic pricing copilot.
+- Use your live web browsing or search tools to fetch up-to-date, India-relevant pricing, competitive, and demand context for this scenario. 
+- Clearly separate facts grounded in web search from patterns inferred from your prior training data.
+- Combine the web evidence with your internal knowledge to explain the *why* behind pricing signals and recommended moves.
+- Explicitly flag where you are extrapolating beyond the available evidence.
+
+Energy / solar scenario:
+Segment: ${energySeg.value}
+Geography & policy context: ${energyGeo.value}
+Timeline / tender window: ${energyWindow.value}
+
+Return:
+A short context summary.
+A) Manager Snapshot — 5–8 bullet points a busy manager can read in under a minute (signals (component cost trends, competitor bids, tariff patterns).
+B) Deeper Analyst Notes — 2–3 short paragraphs recommended pricing / structuring suggestions (e.g., PPAs, pay-per-use, blended offers), with notes on bankability and customer attractiveness.)
+CLOSING:
+"Now you can return to the Agentic Pricing Lab UI at "XX" to log or refine this scenario.`;
+      }
+
+      if (activeVertical === "custom") {
+        return `You are an agentic pricing copilot.
+Custom scenario:
+Title: ${customTitle.value}
+Context:
+${customContext.value}
+
+Return:
+1) A one-paragraph summary of the pricing context and tensions.
+2) 2–3 plausible pricing / competitive signals you would be "detecting".
+3) 2–3 concrete pricing moves or experiments, with explicit trade-offs (value logic, margin vs volume, fairness perception).`;
+      }
+
+      return "";
+    }
+
+    function openEngineWithPrompt(prompt) {
+      const encoded = encodeURIComponent(prompt);
+      let url;
+      if (activeEngine === "chatgpt") {
+        // ChatGPT with gpt-4.1
+        url = "https://chat.openai.com/?model=gpt-4.1&prompt=" + encoded;
+      } else {
+        // Microsoft Copilot
+        url = "https://copilot.microsoft.com/?q=" + encoded;
+      }
+      window.open(url, "_blank");
+    }
+
+    runBtn.addEventListener("click", () => {
+      const prompt = buildPrompt();
+      if (!prompt.trim()) {
+        alert("Please fill in the fields for the selected vertical before running the agent.");
+        return;
+      }
+      addMsg("user", prompt.replace(/\n/g, "<br>"));
+      setStatus("live", "Opening in " + (activeEngine === "chatgpt" ? "ChatGPT…" : "Microsoft Copilot…"));
+      openEngineWithPrompt(prompt);
+      setStatus("idle", "Prompt sent. Check the newly opened tab.");
+    });
+
+    clearBtn.addEventListener("click", () => {
+      logEl.innerHTML = "";
+      addMsg(
+        "agent",
+        "👋 Ready. Choose a vertical, describe a scenario, then run the pricing agent using ChatGPT or Microsoft Copilot."
+      );
+    });
+
+    // Seed log
+    clearBtn.click();
+  </script>
+
+<footer style="text-align: center;padding:14px 18px;color:var(strong)"> UI Pricing Lab: AI Wrapper | 2025 | © Dr. Pravat, GIM, Goa </footer>
+
+</body>
+</html>
